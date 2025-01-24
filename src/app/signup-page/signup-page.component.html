@@ -1,0 +1,20 @@
+<form [formGroup]="submitForm" (submit)="submitSignUp()">
+  <label for="email">email</label>
+  <input id="email" type="text" formControlName="email" />
+  <label for="email">password</label>
+  <input id="password" type="password" formControlName="password" />
+  <label for="steamId">Steam Id</label>
+  <input id="steamId" type="text" formControlName="steamId" />
+  <button type="submit" [disabled]="!submitForm.valid">Submit</button>
+  <a routerLink="/login">Login</a>
+
+  <span>{{ response }}</span>
+  <div *ngIf="password?.dirty || password?.touched">
+    <div
+      *ngIf="password?.hasError('minlength')"
+    > Password must be greater than 5</div>
+    <div
+    *ngIf="password?.hasError('pattern')"
+  > Password must have Uppercase, number and a special character</div>
+  </div>
+</form>

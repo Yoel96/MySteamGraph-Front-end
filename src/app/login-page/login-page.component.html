@@ -1,0 +1,9 @@
+<form [formGroup]="loginForm" (submit)="submitLogin()">
+  <label for="email">email</label>
+  <input id="email" type="text" formControlName="email" />
+  <label for="email">password</label>
+  <input id="password" type="password" formControlName="password" />
+  <button type="submit" [disabled]="!loginForm.valid">Login</button>
+  <a routerLink="/signUp">Sign Up</a>
+  <span>{{response}}</span>
+</form>

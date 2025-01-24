@@ -1,0 +1,149 @@
+:host {
+  width: 80%;
+}
+
+.gameList {
+  display: flex;
+  flex-direction: row;
+
+  justify-content: center;
+  row-gap: 1%;
+  column-gap: 1%;
+}
+
+#uncompletedGameList .gameList {
+  flex-wrap: wrap;
+}
+
+.gameItem {
+  position: relative;
+  color: white;
+
+  margin-bottom: 1%;
+}
+#uncompletedGameList .gameItem {
+  width: 250px;
+  height: 375px;
+}
+
+#gameSlider {
+  overflow: hidden;
+}
+
+#completedListContainer .gameList {
+  position: relative;
+  left: 0;
+}
+#completedListContainer {
+  display: flex;
+}
+
+#completedGameList .gameItem {
+  width: 170px;
+  height: 295px;
+}
+
+.gameItem img {
+  width: 100%;
+}
+
+.gameOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  opacity: 0;
+  transition: 0.5s ease;
+  background-color: #00287195;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 5%;
+  align-items: center;
+}
+
+#uncompletedGameList .gameOverlay {
+  height: 30%;
+}
+#completedGameList .gameOverlay {
+  height: 100%;
+}
+
+.gameItem:hover .gameOverlay {
+  opacity: 1;
+}
+
+.gameItem h4,
+.gameItem h5 {
+  margin: 2% 0% 1% 0%;
+}
+
+.gameDates {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.gameDates div {
+  width: 50%;
+}
+
+.gameDates span {
+  font-size: 14px;
+}
+
+#uncompletedGameList .gameList {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+#completedGameList {
+  position: fixed;
+  width: 80%;
+
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hideCompletedList {
+  animation-duration: 1s;
+  animation-name: hideList;
+  animation-fill-mode: forwards;
+}
+
+.showCompletedList {
+  animation-duration: 1s;
+  animation-name: showList;
+  animation-fill-mode: forwards;
+}
+
+@keyframes showList {
+  from {
+    top: 95%;
+  }
+
+  to {
+    top: 65%;
+  }
+}
+
+@keyframes hideList {
+  from {
+    top: 65%;
+  }
+
+  to {
+    top: 95%;
+  }
+}
+
+#gameListContainer {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}

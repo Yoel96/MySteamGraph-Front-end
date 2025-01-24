@@ -1,0 +1,92 @@
+<div id="gameListContainer" cdkDropListGroup>
+  <div
+    cdkDropList
+    id="uncompletedGameList"
+    [cdkDropListConnectedTo]="['uncompletedGameList']"
+    [cdkDropListData]="gamesToShow"
+    (cdkDropListDropped)="gameDrop($event)"
+  >
+    <h3>Your games</h3>
+    <div class="gameList">
+      @for (game of gamesToShow; track game; let idx = $index) {
+
+      <div id="{{ game['appid'] }}" class="gameItem" cdkDrag>
+        <img
+          src="{{
+            'https://steamcdn-a.akamaihd.net/steam/apps/' +
+              game['appid'] +
+              '/library_600x900.jpg'
+          }}"
+        />
+        <div class="gameOverlay">
+          <h4 class="gameName">{{ game["name"] }}</h4>
+          <div class="gameDates">
+            <div>
+              <span>Hours played:</span>
+              <h5>{{ game["playtime_forever"] / 60 | number : "1.0-0" }}</h5>
+            </div>
+            <div>
+              <span>Last time played:</span>
+              <h5>
+                {{ game["rtime_last_played"] * 1000 | date : "shortDate" }}
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      }
+    </div>
+  </div>
+
+  <div
+    cdkDropList
+    [class]="completedListState ? 'showCompletedList' : 'hideCompletedList'"
+    id="completedGameList"
+    [cdkDropListConnectedTo]="['completedGameList']"
+    [cdkDropListData]="completedGames"
+    (cdkDropListDropped)="gameDrop($event)"
+  >
+    <button (click)="completedList()">
+      <h3>Show Completed Games</h3>
+    </button>
+    <div id="completedListContainer">
+      <button [disabled]="">-</button>
+      <div id="gameSlider">
+        <div class="gameList">
+          @for (game of completedGames; track game; let idx = $index) {
+
+          <div id="{{ game['appid'] }}" class="gameItem" cdkDrag>
+            <img
+              src="{{
+                'https://steamcdn-a.akamaihd.net/steam/apps/' +
+                  game['appid'] +
+                  '/library_600x900.jpg'
+              }}"
+            />
+            <div class="gameOverlay">
+              <h4 class="gameName">{{ game["name"] }}</h4>
+              <div class="gameDates">
+                <div>
+                  <span>Hours played:</span>
+                  <h5>
+                    {{ game["playtime_forever"] / 60 | number : "1.0-0" }}
+                  </h5>
+                </div>
+                <div>
+                  <span>Last time played:</span>
+                  <h5>
+                    {{ game["rtime_last_played"] * 1000 | date : "shortDate" }}
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          }
+        </div>
+      </div>
+      <button>+</button>
+    </div>
+  </div>
+</div>
