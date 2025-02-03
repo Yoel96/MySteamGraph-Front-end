@@ -7,20 +7,33 @@ import { Observable } from 'rxjs';
 })
 export class SteamService {
 
-  url:string ="https://localhost:7119/api/Steam"
+  url:string ="https://localhost:7119/api"
  
 
   constructor(private http: HttpClient) { }
 
   getuserProfile(): Observable<any>{
 
-    return this.http.get(this.url+"/profile/");
+    return this.http.get(this.url+"/Steam/profile/");
 
   }
 
   getUserGames(): Observable<any>{
 
-    return this.http.get(this.url+"/games/");
+    return this.http.get(this.url+"/Steam/games/");
 
   }
+
+  getCompletedGames():Observable<any>{
+
+    return this.http.get(this.url+"/CompletedGames/");
+
+  }
+
+  addCompletedGame(gameData:any): Observable<any>{
+
+    return this.http.post(this.url+"/CompletedGames/", gameData)
+
+  }
+
 }

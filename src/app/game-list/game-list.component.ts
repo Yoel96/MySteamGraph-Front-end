@@ -9,10 +9,11 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 @Component({
   selector: 'app-game-list',
   standalone: true,
-  imports: [DecimalPipe, DatePipe, CdkDropListGroup, CdkDropList, CdkDrag],
+  imports: [DecimalPipe, DatePipe, InfiniteScrollDirective, CdkDropListGroup, CdkDropList, CdkDrag],
   providers: [SteamService],
   templateUrl: './game-list.component.html',
   styleUrl: './game-list.component.css',
@@ -20,23 +21,39 @@ import {
 export class GameListComponent {
   steamService = inject(SteamService);
   games = [];
-  gamesToShow = [];
+  filteredGames = [];
   completedGames = [];
-  iteration = 0;
-  completedListState:boolean = false;
+  completedGamesId: number[] = [];
+  filteredCompletedGames = [];
+
+  gamesIteration: number = 0;
+  completedGamesIteration: number = 0;
+  completedListState: boolean = false;
 
   constructor() {
     this.steamService.getUserGames().subscribe({
       next: (data) => {
-        console.log(data.response);
         this.games = data.response.games;
-        this.gamesToShow = this.games.filter((e, idx) => {
-          if (idx >= this.iteration && idx <= this.iteration + 50) {
-            return true;
-          } else {
-            return false;
-          }
+        this.steamService.getCompletedGames().subscribe({
+          next: (data) => {
+            console.log(
+              data.map(function (e: any) {
+                return e.steamId;
+              })
+            );
+            this.completedGamesId = data.map(function (e: any) {
+              return e.steamId;
+            });
+            console.log(this.games);
+            this.completedGames = this.games.filter(
+              (e) => this.completedGamesId.indexOf(e['appid']) > -1
+            );
+            this.filterCompletedGames();
+          },
+          error: (error) => {},
         });
+
+        this.filterGameList();
       },
       error: (error) => {},
     });
@@ -44,20 +61,79 @@ export class GameListComponent {
 
   gameDrop(event: CdkDragDrop<never[]>) {
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
     } else {
-      console.log(event)
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
         event.previousIndex,
-        event.currentIndex,
+        Infinity
+      );
+
+      if (event.container.id == 'completedGameList') {
+        if (this.completedGames.length / 8 > this.completedGamesIteration + 1) {
+          this.completedGamesIteration++;
+        }
+        this.completedGamesId.push(
+          parseInt(event.item.element.nativeElement.id)
+        );
+        this.steamService
+          .addCompletedGame({
+            steamGameId: event.item.element.nativeElement.id,
+          })
+          .subscribe({
+            next: (data) => {
+              console.log(data);
+            },
+          });
+      } else {
+        console.log(this.completedGames.length / 8);
+        if (this.completedGames.length / 8 <= this.completedGamesIteration) {
+          this.completedGamesIteration--;
+        }
+      }
+      this.filterCompletedGames();
+    }
+  }
+
+  completedList() {
+    this.completedListState = !this.completedListState;
+    this.filterGameList();
+  }
+
+  filterGameList() {
+    if (this.completedListState) {
+      this.filteredGames = this.games.filter(
+        (e, idx) =>
+          idx >= this.gamesIteration * 50 &&
+          idx <= (this.gamesIteration + 1) * 50 &&
+          this.completedGamesId.indexOf(e['appid']) == -1
+      );
+    } else {
+      this.filteredGames = this.games.filter(
+        (e, idx) =>
+          idx >= this.gamesIteration * 50 &&
+          idx <= (this.gamesIteration + 1) * 50
       );
     }
   }
 
-  completedList(){
-    this.completedListState= !this.completedListState;
+  filterCompletedGames() {
+    this.filteredCompletedGames = this.completedGames.filter(
+      (e, idx) =>
+        idx >= this.completedGamesIteration * 8 &&
+        idx < (this.completedGamesIteration + 1) * 8
+    );
   }
 
+  changeFilter(number: number) {
+    this.completedGamesIteration += number;
+    this.filterCompletedGames();
+  }
+
+  
 }

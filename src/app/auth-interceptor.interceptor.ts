@@ -1,7 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthServiceService } from './auth-service.service';
-import { catchError, switchMap } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   console.log(req.url);
@@ -15,7 +15,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
     return next(newReq).pipe(
       catchError((err) => {
-        console.log(err);
+         console.log(err.status)
+        if(err.status==401){
         return authService.refresh().pipe(
           switchMap((res) => {
             localStorage.setItem('accessToken', res.accessToken);
@@ -27,8 +28,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               ),
             });
             return next(newReq);
+          }),
+          catchError((err)=>{
+
+            return throwError(()=>err)
           })
-        );
+        );}
+        else{
+          return throwError(()=>err)
+        }
       })
     );
   } else {

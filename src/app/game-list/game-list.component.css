@@ -28,19 +28,32 @@
 
 #gameSlider {
   overflow: hidden;
+    width: 95%;
+  height: 100%;
 }
+
+ 
 
 #completedListContainer .gameList {
   position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
   left: 0;
+  flex-shrink: 0;
+  justify-content: start;
+
 }
 #completedListContainer {
+  
+  width: 100%;
   display: flex;
+  flex-direction: row;
 }
 
 #completedGameList .gameItem {
   width: 170px;
   height: 295px;
+  min-width: 170px;
 }
 
 .gameItem img {

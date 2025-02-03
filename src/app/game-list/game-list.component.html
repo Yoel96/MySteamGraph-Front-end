@@ -3,14 +3,14 @@
     cdkDropList
     id="uncompletedGameList"
     [cdkDropListConnectedTo]="['uncompletedGameList']"
-    [cdkDropListData]="gamesToShow"
+    [cdkDropListData]="filteredGames"
     (cdkDropListDropped)="gameDrop($event)"
   >
     <h3>Your games</h3>
     <div class="gameList">
-      @for (game of gamesToShow; track game; let idx = $index) {
+      @for (game of filteredGames; track game; let idx = $index) {
 
-      <div id="{{ game['appid'] }}" class="gameItem" cdkDrag>
+      <div id="{{ game['appid'] }}" class="gameItem" cdkDrag [cdkDragDisabled]="!completedListState">
         <img
           src="{{
             'https://steamcdn-a.akamaihd.net/steam/apps/' +
@@ -51,10 +51,10 @@
       <h3>Show Completed Games</h3>
     </button>
     <div id="completedListContainer">
-      <button [disabled]="">-</button>
+      <button [disabled]="completedGames.length<8 || completedGamesIteration<1? true: false" (click)="changeFilter(-1)" ><</button>
       <div id="gameSlider">
-        <div class="gameList">
-          @for (game of completedGames; track game; let idx = $index) {
+        <div  class="gameList">
+          @for (game of filteredCompletedGames; track game; let idx = $index) {
 
           <div id="{{ game['appid'] }}" class="gameItem" cdkDrag>
             <img
@@ -86,7 +86,7 @@
           }
         </div>
       </div>
-      <button>+</button>
+      <button [disabled]="completedGames.length<=8 || (completedGamesIteration+1)*8 >completedGames.length" (click)="changeFilter(1)">></button>
     </div>
   </div>
 </div>
