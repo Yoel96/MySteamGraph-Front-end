@@ -36,4 +36,10 @@ export class SteamService {
 
   }
 
+  removeCompletedGame(gameId:any) : Observable<any>{
+
+    return this.http.delete(this.url+"/CompletedGames/"+gameId )
+
+  }
+
 }

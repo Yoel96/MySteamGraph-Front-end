@@ -67,14 +67,16 @@ export class GameListComponent {
         event.currentIndex
       );
     } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        Infinity
-      );
+
 
       if (event.container.id == 'completedGameList') {
+        // If the user drop a game into the completed list container
+        transferArrayItem(
+          event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          Infinity
+        );
         if (this.completedGames.length / 8 > this.completedGamesIteration + 1) {
           this.completedGamesIteration++;
         }
@@ -91,16 +93,37 @@ export class GameListComponent {
             },
           });
       } else {
-        console.log(this.completedGames.length / 8);
+        // If the user drop a game into the uncompleted list container
+
+        this.steamService.removeCompletedGame(event.item.element.nativeElement.id).subscribe({
+          next:(data)=>{  
+
+
+          }
+        })
+
+        transferArrayItem(
+          event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          event.currentIndex
+        );
+        
+        
         if (this.completedGames.length / 8 <= this.completedGamesIteration) {
           this.completedGamesIteration--;
         }
+
+        delete this.completedGamesId[this.completedGamesId.indexOf(parseInt(event.item.element.nativeElement.id))]
+        this.filterGameList(); 
+
       }
       this.filterCompletedGames();
     }
   }
 
   completedList() {
+    // This function is called when the user press the button for the list of completed games
     this.completedListState = !this.completedListState;
     this.filterGameList();
   }
@@ -135,5 +158,8 @@ export class GameListComponent {
     this.filterCompletedGames();
   }
 
-  
+  onScroll(){
+    console.log("scrolled")
+
+  }
 }

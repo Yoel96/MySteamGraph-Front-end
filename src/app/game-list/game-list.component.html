@@ -7,7 +7,8 @@
     (cdkDropListDropped)="gameDrop($event)"
   >
     <h3>Your games</h3>
-    <div class="gameList">
+    <div class="gameList"    infiniteScroll   [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="150" [scrollWindow]="false" (scrolled)="onScroll()">
       @for (game of filteredGames; track game; let idx = $index) {
 
       <div id="{{ game['appid'] }}" class="gameItem" cdkDrag [cdkDragDisabled]="!completedListState">
