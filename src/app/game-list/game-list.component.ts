@@ -25,7 +25,8 @@ export class GameListComponent {
   completedGames = [];
   completedGamesId: number[] = [];
   filteredCompletedGames = [];
-
+  gameHourFilter:string="";
+  gameNameFilter:string="";
   gamesIteration: number = 0;
   completedGamesIteration: number = 0;
   completedListState: boolean = false;
@@ -132,14 +133,14 @@ export class GameListComponent {
     if (this.completedListState) {
       this.filteredGames = this.games.filter(
         (e, idx) =>
-          idx >= this.gamesIteration * 50 &&
+          idx >=0 &&
           idx <= (this.gamesIteration + 1) * 50 &&
           this.completedGamesId.indexOf(e['appid']) == -1
       );
     } else {
       this.filteredGames = this.games.filter(
         (e, idx) =>
-          idx >= this.gamesIteration * 50 &&
+          idx >= 0 &&
           idx <= (this.gamesIteration + 1) * 50
       );
     }
@@ -160,6 +161,22 @@ export class GameListComponent {
 
   onScroll(){
     console.log("scrolled")
-
+    this.gamesIteration++;
+    this.filterGameList();
   }
+
+  filterbyName(event:any){
+    console.log(event.target.value)
+    this.filteredGames = this.games.filter((element:any)=>
+
+        element.name.toLowerCase().includes(event.target.value)
+    )
+  }
+
+  filterbyHour(event:any){
+    this.gameNameFilter="";
+    this.filteredGames = this.games.filter((element:any)=> (Math.round(parseInt(element.playtime_forever)/60) ) == event.target.value
+    )
+  }
+
 }

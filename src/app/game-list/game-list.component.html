@@ -7,11 +7,28 @@
     (cdkDropListDropped)="gameDrop($event)"
   >
     <h3>Your games</h3>
-    <div class="gameList"    infiniteScroll   [infiniteScrollDistance]="2"
-    [infiniteScrollThrottle]="150" [scrollWindow]="false" (scrolled)="onScroll()">
+    <div>
+       <h4>Filter by</h4>
+        <label for="GameName">Game Name</label>
+        <input id="GameName" type="text" [value]="gameNameFilter" (input)="filterbyName($event)"/>
+        <label for="GameHour">Hours played</label>
+        <input id="GameHour" type="text" [value]="gameHourFilter" (input)="filterbyHour($event)"/>
+    </div>
+    <div
+      class="gameList"
+      infiniteScroll
+      [infiniteScrollDistance]="2"
+      [scrollWindow]="false"
+      (scrolled)="onScroll()"
+    >
       @for (game of filteredGames; track game; let idx = $index) {
 
-      <div id="{{ game['appid'] }}" class="gameItem" cdkDrag [cdkDragDisabled]="!completedListState">
+      <div
+        id="{{ game['appid'] }}"
+        class="gameItem"
+        cdkDrag
+        [cdkDragDisabled]="!completedListState"
+      >
         <img
           src="{{
             'https://steamcdn-a.akamaihd.net/steam/apps/' +
@@ -52,9 +69,18 @@
       <h3>Show Completed Games</h3>
     </button>
     <div id="completedListContainer">
-      <button [disabled]="completedGames.length<8 || completedGamesIteration<1? true: false" (click)="changeFilter(-1)" ><</button>
+      <button
+        [disabled]="
+          completedGames.length < 8 || completedGamesIteration < 1
+            ? true
+            : false
+        "
+        (click)="changeFilter(-1)"
+      >
+        <
+      </button>
       <div id="gameSlider">
-        <div  class="gameList">
+        <div class="gameList">
           @for (game of filteredCompletedGames; track game; let idx = $index) {
 
           <div id="{{ game['appid'] }}" class="gameItem" cdkDrag>
@@ -87,7 +113,15 @@
           }
         </div>
       </div>
-      <button [disabled]="completedGames.length<=8 || (completedGamesIteration+1)*8 >completedGames.length" (click)="changeFilter(1)">></button>
+      <button
+        [disabled]="
+          completedGames.length <= 8 ||
+          (completedGamesIteration + 1) * 8 > completedGames.length
+        "
+        (click)="changeFilter(1)"
+      >
+        >
+      </button>
     </div>
   </div>
 </div>
