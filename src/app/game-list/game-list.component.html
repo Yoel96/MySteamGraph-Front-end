@@ -10,9 +10,11 @@
     <div>
        <h4>Filter by</h4>
         <label for="GameName">Game Name</label>
-        <input id="GameName" type="text" [value]="gameNameFilter" (input)="filterbyName($event)"/>
+        <input id="GameName" type="text"  [(ngModel)]="gameNameFilter" (input)="filterbyName($event)"/>
         <label for="GameHour">Hours played</label>
-        <input id="GameHour" type="text" [value]="gameHourFilter" (input)="filterbyHour($event)"/>
+        <input id="GameHour" type="number"  [(ngModel)]="gameHourFilter" min="0" (input)="filterbyHour($event)"/>
+        <div><label>Sort by most hours played</label><input type="radio"   checked="true" name="order"  (change)="sortGames(true)" />
+          <label>Sort by least hours played</label><input type="radio" name="order"  (change)="sortGames(false)" /></div>
     </div>
     <div
       class="gameList"

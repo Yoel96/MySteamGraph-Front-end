@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { SteamService } from '../steam.service';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 import {
   CdkDragDrop,
   CdkDrag,
@@ -13,7 +15,15 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 @Component({
   selector: 'app-game-list',
   standalone: true,
-  imports: [DecimalPipe, DatePipe, InfiniteScrollDirective, CdkDropListGroup, CdkDropList, CdkDrag],
+  imports: [
+    FormsModule,
+    DecimalPipe,
+    DatePipe,
+    InfiniteScrollDirective,
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+  ],
   providers: [SteamService],
   templateUrl: './game-list.component.html',
   styleUrl: './game-list.component.css',
@@ -21,16 +31,18 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 export class GameListComponent {
   steamService = inject(SteamService);
   games = [];
+  unsolteredGames=[];
   filteredGames = [];
   completedGames = [];
   completedGamesId: number[] = [];
   filteredCompletedGames = [];
-  gameHourFilter:string="";
-  gameNameFilter:string="";
+   sortLeastPlayed: boolean = false;
+  gameHourFilter: string = '';
+  gameNameFilter: string = '';
   gamesIteration: number = 0;
   completedGamesIteration: number = 0;
   completedListState: boolean = false;
-
+  sortedOrder:boolean=false;
   constructor() {
     this.steamService.getUserGames().subscribe({
       next: (data) => {
@@ -55,6 +67,7 @@ export class GameListComponent {
         });
 
         this.filterGameList();
+        this.sortGames(true);
       },
       error: (error) => {},
     });
@@ -68,8 +81,6 @@ export class GameListComponent {
         event.currentIndex
       );
     } else {
-
-
       if (event.container.id == 'completedGameList') {
         // If the user drop a game into the completed list container
         transferArrayItem(
@@ -96,12 +107,11 @@ export class GameListComponent {
       } else {
         // If the user drop a game into the uncompleted list container
 
-        this.steamService.removeCompletedGame(event.item.element.nativeElement.id).subscribe({
-          next:(data)=>{  
-
-
-          }
-        })
+        this.steamService
+          .removeCompletedGame(event.item.element.nativeElement.id)
+          .subscribe({
+            next: (data) => {},
+          });
 
         transferArrayItem(
           event.previousContainer.data,
@@ -109,15 +119,18 @@ export class GameListComponent {
           event.previousIndex,
           event.currentIndex
         );
-        
-        
+
         if (this.completedGames.length / 8 <= this.completedGamesIteration) {
           this.completedGamesIteration--;
         }
 
-        delete this.completedGamesId[this.completedGamesId.indexOf(parseInt(event.item.element.nativeElement.id))]
-        this.filterGameList(); 
+        delete this.completedGamesId[
+          this.completedGamesId.indexOf(
+            parseInt(event.item.element.nativeElement.id)
+          )
+        ];
 
+        this.filterGameList();
       }
       this.filterCompletedGames();
     }
@@ -126,6 +139,7 @@ export class GameListComponent {
   completedList() {
     // This function is called when the user press the button for the list of completed games
     this.completedListState = !this.completedListState;
+  
     this.filterGameList();
   }
 
@@ -133,17 +147,17 @@ export class GameListComponent {
     if (this.completedListState) {
       this.filteredGames = this.games.filter(
         (e, idx) =>
-          idx >=0 &&
+          idx >= 0 &&
           idx <= (this.gamesIteration + 1) * 50 &&
           this.completedGamesId.indexOf(e['appid']) == -1
       );
     } else {
       this.filteredGames = this.games.filter(
-        (e, idx) =>
-          idx >= 0 &&
-          idx <= (this.gamesIteration + 1) * 50
+        (e, idx) => idx >= 0 && idx <= (this.gamesIteration + 1) * 50
       );
     }
+    this.sortGames(this.sortedOrder);
+
   }
 
   filterCompletedGames() {
@@ -159,24 +173,45 @@ export class GameListComponent {
     this.filterCompletedGames();
   }
 
-  onScroll(){
-    console.log("scrolled")
-    this.gamesIteration++;
-    this.filterGameList();
+  onScroll() {
+    console.log('scrolled');
+    if (this.gameHourFilter == '' && this.gameNameFilter == '') {
+      this.gamesIteration++;
+      this.filterGameList();
+    }
   }
 
-  filterbyName(event:any){
-    console.log(event.target.value)
-    this.filteredGames = this.games.filter((element:any)=>
-
-        element.name.toLowerCase().includes(event.target.value)
-    )
+  filterbyName(event: any) {
+    this.gameHourFilter = '';
+    this.filteredGames = this.games.filter((element: any) =>
+      element.name.toLowerCase().includes(event.target.value)
+    );
   }
 
-  filterbyHour(event:any){
-    this.gameNameFilter="";
-    this.filteredGames = this.games.filter((element:any)=> (Math.round(parseInt(element.playtime_forever)/60) ) == event.target.value
-    )
+  filterbyHour(event: any) {
+    this.gameNameFilter = '';
+    this.filteredGames = this.games.filter(
+      (element: any) =>
+        Math.round(parseInt(element.playtime_forever) / 60) ==
+        event.target.value
+    );
   }
 
+  sortGames(order:boolean) {
+    console.log(order);
+    this.sortedOrder=order;
+    if (order) {
+      
+      this.filteredGames.sort((a: any, b: any) => {
+        return b.playtime_forever - a.playtime_forever;
+      });
+    }  else{
+      this.filteredGames.sort((a: any, b: any) => {
+        return  a.playtime_forever -b.playtime_forever ;
+      });
+
+    }
+       
+     
+  }
 }
